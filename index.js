@@ -7,7 +7,7 @@ const app = express();
 app.use(express.json());
 
 //register Routes
-app.use(customerRoutes);
+app.use("/customer", customerRoutes);
 
 //mongoConnect
 db_connect();

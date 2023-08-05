@@ -8,7 +8,10 @@ export const validateCustomer = async (req, res, next) => {
   const schema = Joi.object({
     name: Joi.string().min(3).max(20).trim().required(),
     dob: Joi.string().required().trim(),
-    gender: Joi.string().required().trim(),
+    gender: Joi.string()
+      .required()
+      .trim()
+      .valid("male", "female", "preferNotToSay"),
     email: Joi.string().email().trim().required(),
   });
   try {
@@ -67,4 +70,42 @@ export const getCustomerDetails = async (req, res) => {
   }
   // send response
   return res.status(200).send("Findinng.....");
+};
+export const editCutomer = async (req, res) => {
+  const customerId = req.params.id;
+  console.log(customerId);
+  //check id validity
+  const isValid = checkMongoIdValidity(customerId);
+
+  if (!isValid) {
+    return res.status(401).send({ message: "Invalid Id" });
+  }
+  //edit in db
+  const newDetails = req.body;
+  await customer.updateOne(
+    { _id: customerId },
+    {
+      $set: {
+        name: newDetails.name,
+        dob: newDetails.dob,
+        gender: newDetails.gender,
+        email: newDetails.email,
+      },
+    }
+  );
+
+  //send response
+  return res.status(200).send({ message: "Customer Edited Succesfully" });
+};
+export const searchCustomer = async (req, res) => {
+  const searchDetails = req.body;
+  const searchedCustomers = await customer.find({
+    name: { $regex: `${searchDetails.name}`, $options: "i" },
+  });
+  if (searchedCustomers.length == 0) {
+    return res
+      .status(400)
+      .send({ message: "Couldn't find user with the details" });
+  }
+  return res.status(200).send(searchedCustomers);
 };

@@ -5,6 +5,8 @@ import {
   addCustomer,
   deleteCustomer,
   getCustomerDetails,
+  editCutomer,
+  searchCustomer,
 } from "./customer.services.js";
 const router = express.Router();
 
@@ -12,9 +14,13 @@ const router = express.Router();
 router.post("/customer/create", validateCustomer, addCustomer);
 
 //delete customer
-router.delete("/customer/delete/:id", deleteCustomer);
+router.delete("/delete/:id", deleteCustomer);
 
 //get single cutomer details
-router.get("/customer/details/:id", getCustomerDetails);
+router.get("/details/:id", getCustomerDetails);
 
+//edit customer
+router.put("/edit/:id", validateCustomer, editCutomer);
+//search by name(regex)
+router.get("/search", searchCustomer);
 export default router;
